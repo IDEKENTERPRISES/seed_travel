@@ -115,23 +115,15 @@ class Script(scripts.Script):
 
         for i in range(len(seeds)):
             p.seed = seeds[i]
-            p.subseed = seeds[i+1] if i+1 < len(seeds) else seeds[0]
+            p.subseed = seeds[i]
+            p.subseed_strength = 0
             fix_seed(p)
             # We want to save seeds since they might have been altered by fix_seed()
             seeds[i] = p.seed
-            if i+1 < len(seeds): seeds[i+1] = p.subseed
-
-            numsteps = 1 if not loopback and i+1 == len(seeds) else int(steps) # Number of steps is 1 if we aren't looping at the last seed
-            for i in range(numsteps):
-                if unsinify:
-                    x = float(i/float(steps))
-                    p.subseed_strength = x + (0.1 * math.sin(x*2*math.pi))
-                else:
-                    p.subseed_strength = float(i/float(steps))
-                proc = process_images(p)
-                if initial_info is None:
-                    initial_info = proc.info
-                images += proc.images
+            proc = process_images(p)
+            if initial_info is None:
+                initial_info = proc.info
+            images += proc.images
 
         if save_video:
             clip = ImageSequenceClip.ImageSequenceClip([np.asarray(i) for i in images], fps=video_fps)
